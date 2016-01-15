@@ -1,72 +1,51 @@
 #include <stdio.h>
 
 int Check_NO(FILE *CH){
-	
-  char check;
-  int nb=0;
-   while((check=fgetc(CH))!=EOF)
-                {
-                        if(check=='\n') nb++;
-                        
-        }
- 
-return nb;
+    char check;
+    int nb=0;
+    while((check=fgetc(CH))!=EOF) if(check=='\n') nb++;
+    return nb;
 }
 
 int Check_D(FILE *CH){
-	
-  char check;
-  int nb=0;
-   while((check=fgetc(CH))!='\n')
-                {
-                        if(check=='\t') nb++;
-                        
-        }
- 
-return nb+1;
+    char check;
+    int nb=0;
+    while((check=fgetc(CH))!='\n') if(check=='\t') nb++;
+    return nb+1;
 }
+
 double **READ_FILE2(FILE *Rdata,double **Rd,int X,int Y){
-	
-	int i,j;
-	
-	for(i=0;i<Y;i++){
-		for(j=0;j<X;j++){
-			fscanf(Rdata,"%lf",&Rd[i][j]);
-			//printf("%f ",Rd[i][j]);
-		}
-	//printf("\n");
-	}
-return Rd;
+    int i,j;
+    for(i=0;i<Y;i++){
+        for(j=0;j<X;j++){
+            fscanf(Rdata,"%lf",&Rd[i][j]);
+            //printf("%f ",Rd[i][j]);
+        }
+        //printf("\n");
+    }
+    return Rd;
 }
 
 double *READ_FILE1(FILE *Rdata,double *Rd,int X){
-	
-	int j;
-	
-	
-		for(j=0;j<X;j++){
-			fscanf(Rdata,"%lf",&Rd[j]);
-			//printf("%f ",Rd[j]);
-			//printf("\n");
-		}
-return Rd;
+    int j;
+    for(j=0;j<X;j++){
+        fscanf(Rdata,"%lf",&Rd[j]);
+        //printf("%f ",Rd[j]);
+        //printf("\n");
+    }
+    return Rd;
 }
 
 char *READ_FILE_char(FILE *Rdata,char *Rd,int X){
-	
-	int j;
-	
-	
-		for(j=0;j<X;j++){
-
-			while((*Rd=fgetc(Rdata))!='\0');
-			printf("%c\n",*Rd);
-			*Rd=*Rd+sizeof(*Rd);
-			//printf("\n");
-		}
-return Rd;
+    int j;
+    for(j=0;j<X;j++){
+        while((*Rd=fgetc(Rdata))!='\0');
+        printf("%c\n",*Rd);
+        *Rd=*Rd+sizeof(*Rd);
+        //printf("\n");
+    }
+    return Rd;
 }
-
 
 /*
 
