@@ -73,16 +73,14 @@ void clear_matrix(double **L,int sizeX,int sizeY){
 void AVG_matrix(double **X,double *X_AVG,int XD,int N){
     int i=0,j=0;
     clear_vector(X_AVG,XD);
-    for(i=0;i<XD;i++)
-    for(j=0;j<N;j++)
-    X_AVG[i]=X_AVG[i]+X[j][i]/N;
+    for(i=0;i<XD;i++) for(j=0;j<N;j++) X_AVG[i]=X_AVG[i]+X[j][i]/N;
 }
 
 void transposed_matrix( double **a,double **b,int Y,int X){
     int i=0, j=0;
     //int temp;
     //double **b = d_CreateTwoDimensionalArray(Y,X);
-    for(j=0;j<Y;j++)  for(i=0;i<X;i++)  b[j][i]=a[i][j];
+    for(j=0;j<Y;j++) for(i=0;i<X;i++) b[j][i]=a[i][j];
     //return b;
 }
 
@@ -90,9 +88,7 @@ double **Autocorrelation_matrix( int **a, int **b,int d,int N){
     int i=0,j=0,k=0;
     double **c=NULL;
     c=d_CreateTwoDimensionalArray(N,N);
-    for(i=0;i<N;i++)
-    for(j=0;j<N;j++)
-    for(k=0;k<d;k++) c[i][j]+=(double)(a[i][k]*b[k][j])/N;
+    for(i=0;i<N;i++) for(j=0;j<N;j++) for(k=0;k<d;k++) c[i][j]+=(double)(a[i][k]*b[k][j])/N;
     return c;
 }
 
@@ -100,20 +96,15 @@ void MXM_multiplication( double **a, double **b,double **c,int D,int N){
     int i=0,j=0,k=0;
     // double **c=NULL;
     // c=d_CreateTwoDimensionalArray(N,D);
-    for(i=0;i<N;i++)
-    for(j=0;j<D;j++) c[i][j]=0.0;
-    for(i=0;i<N;i++)
-    for(j=0;j<D;j++)
-    for(k=0;k<N;k++) c[i][j]+=a[i][k]*b[k][j];
+    for(i=0;i<N;i++) for(j=0;j<D;j++) c[i][j]=0.0;
+    for(i=0;i<N;i++) for(j=0;j<D;j++) for(k=0;k<N;k++) c[i][j]+=a[i][k]*b[k][j];
     }
 
 void MXM2(double **a,double **b,double **c,int D,int N){
     int i=0,j=0,k=0;
     //double **c=d_CreateTwoDimensionalArray(D,D);
     clear_matrix(c,D,D);
-    for(i=0;i<D;i++)
-    for(j=0;j<D;j++)
-    for(k=0;k<N;k++) c[i][j]+=a[k][i]*b[k][j];
+    for(i=0;i<D;i++) for(j=0;j<D;j++) for(k=0;k<N;k++) c[i][j]+=a[k][i]*b[k][j];
     //return c;
 }
 
@@ -121,9 +112,7 @@ void MXM_PCA(double **a,double **b,double **c,int XD,int lowD,int N){
     int i=0,j=0,k=0;
     //double **c=d_CreateTwoDimensionalArray(D,D);
     clear_matrix(c,lowD,N);
-    for(i=0;i<N;i++)
-    for(j=0;j<lowD;j++)
-    for(k=0;k<XD;k++) c[i][j]+=a[i][k]*b[k][j];
+    for(i=0;i<N;i++) for(j=0;j<lowD;j++) for(k=0;k<XD;k++) c[i][j]+=a[i][k]*b[k][j];
     //return c;
 }
 
@@ -131,9 +120,7 @@ void MXMT(double **a,double **b,double **c,int D,int N){
     int i=0,j=0,k=0;
     //double **c=d_CreateTwoDimensionalArray(D,D);
     clear_matrix(c,N,N);
-    for(i=0;i<N;i++)
-    for(j=0;j<N;j++)
-    for(k=0;k<D;k++) c[i][j]+=a[i][k]*b[k][j];
+    for(i=0;i<N;i++) for(j=0;j<N;j++) for(k=0;k<D;k++) c[i][j]+=a[i][k]*b[k][j];
     //return c;
 }
 
@@ -142,8 +129,7 @@ void WXV(double **W,double **V,double **H,int VD,int VN,int HD){
     clear_matrix(H,HD,VN);
     for(a=0;a<VN;a++){
         for(b=0;b<HD;b++){
-            for(c=0;c<VD;c++)
-            H[a][b]+=W[b][c]*V[a][c];
+            for(c=0;c<VD;c++) H[a][b]+=W[b][c]*V[a][c];
             // printf("%f\t",H[a][b]);
         }
     // printf("\n");
@@ -154,12 +140,12 @@ void MXV_multiplication( double **a, double *b,double *c,int N){
     int i=0,k=0;
     //double *c=d_CreateONEDimensionalArray(N);
     // for(i=0;i<N;i++) printf("b=%f\t",b[i]);
-    for(i=0;i<N;i++)
-    c[i]=0.0;
-    for(i=0;i<N;i++)
-    for(k=0;k<N;k++){
-        c[i]=c[i]+a[i][k]*b[k];
-        //printf("a=%f\t",a[i][k]);
+    for(i=0;i<N;i++) c[i]=0.0;
+    for(i=0;i<N;i++){
+        for(k=0;k<N;k++){
+            c[i]=c[i]+a[i][k]*b[k];
+            //printf("a=%f\t",a[i][k]);
+        }
     }
     //return c;
 }
@@ -167,16 +153,14 @@ void MXV_multiplication( double **a, double *b,double *c,int N){
 void MPM(double **a,double **b,double **c,int D,int N){
     int i=0,j=0,k=0;
     //double **c=d_CreateTwoDimensionalArray(D,N);
-    for(i=0;i<D;i++)
-    for(k=0;k<N;k++) c[i][k]=a[i][k]+b[i][k];
+    for(i=0;i<D;i++) for(k=0;k<N;k++) c[i][k]=a[i][k]+b[i][k];
     // return c;
 }
 
 void MmM(double **a,double **b,double **c,int D,int N){
     int i=0,j=0,k=0;
     // double **c=d_CreateTwoDimensionalArray(D,N);
-    for(i=0;i<D;i++)
-    for(k=0;k<N;k++) c[i][k]=a[i][k]-b[i][k];
+    for(i=0;i<D;i++) for(k=0;k<N;k++) c[i][k]=a[i][k]-b[i][k];
     //return c;
 }
 
@@ -244,13 +228,14 @@ void Cholesky(double **A,double **TL,int size){
 double **Normalization(double **X,double **Y,int n,int d){
     int i,j;
     double *max=d_CreateONEDimensionalArray(d);
-    for(j=0;j<d;j++)max[j]=(-LDBL_MAX);
+    for(j=0;j<d;j++) max[j]=(-LDBL_MAX);
     double *min=d_CreateONEDimensionalArray(d);
-    for(j=0;j<d;j++)min[j]=LDBL_MAX;
-    for(j=0;j<d;j++)
-    for(i=0;i<n;i++){
-        if(X[i][j]>max[j])max[j]=X[i][j];
-        if(X[i][j]<min[j])min[j]=X[i][j];
+    for(j=0;j<d;j++) min[j]=LDBL_MAX;
+    for(j=0;j<d;j++){
+        for(i=0;i<n;i++){
+            if(X[i][j]>max[j])max[j]=X[i][j];
+            if(X[i][j]<min[j])min[j]=X[i][j];
+        }
     }
     for(j=0;j<d;j++){
         if(max[j]==min[j]) for(i=0;i<n;i++) Y[i][j]=0;
@@ -273,16 +258,10 @@ double **Normalization2(double **X,double **Y,int n,int d){
     //for(j=0;j<d;j++)max[j]=(-LDBL_MAX);
     double *sig=d_CreateONEDimensionalArray(d);
     //for(j=0;j<d;j++)min[j]=LDBL_MAX;
-    for(j=0;j<d;j++)
-    for(i=0,mean[j]=0;i<n;i++)
-    mean[j]=mean[j]+X[i][j];
-    for(j=0;j<d;j++)
-    mean[j]=mean[j]/n;
-    for(j=0;j<d;j++)
-    for(i=0,sig[j]=0;i<n;i++)
-    sig[j]=sig[j]+(X[i][j]-mean[j])*(X[i][j]-mean[j]);
-    for(j=0;j<d;j++)
-    sig[j]=sqrt(sig[j]/n);
+    for(j=0;j<d;j++) for(i=0,mean[j]=0;i<n;i++) mean[j]=mean[j]+X[i][j];
+    for(j=0;j<d;j++) mean[j]=mean[j]/n;
+    for(j=0;j<d;j++) for(i=0,sig[j]=0;i<n;i++) sig[j]=sig[j]+(X[i][j]-mean[j])*(X[i][j]-mean[j]);
+    for(j=0;j<d;j++) sig[j]=sqrt(sig[j]/n);
     for(j=0;j<d;j++){
         if(sig[j]==0) for(i=0;i<n;i++) Y[i][j]=0;
         else for(i=0;i<n;i++) Y[i][j]=(X[i][j]-mean[j])/sig[j];
@@ -298,16 +277,10 @@ double **Normalization2_for_test(double **X,double **Y,double **T,int n,int d,in
     //for(j=0;j<d;j++)max[j]=(-LDBL_MAX);
     double *sig=d_CreateONEDimensionalArray(d);
     //for(j=0;j<d;j++)min[j]=LDBL_MAX;
-    for(j=0;j<d;j++)
-    for(i=0,mean[j]=0;i<n;i++)
-    mean[j]=mean[j]+X[i][j];
-    for(j=0;j<d;j++)
-    mean[j]=mean[j]/n;
-    for(j=0;j<d;j++)
-    for(i=0,sig[j]=0;i<n;i++)
-    sig[j]=sig[j]+(X[i][j]-mean[j])*(X[i][j]-mean[j]);
-    for(j=0;j<d;j++)
-    sig[j]=sqrt(sig[j]/n);
+    for(j=0;j<d;j++) for(i=0,mean[j]=0;i<n;i++) mean[j]=mean[j]+X[i][j];
+    for(j=0;j<d;j++) mean[j]=mean[j]/n;
+    for(j=0;j<d;j++) for(i=0,sig[j]=0;i<n;i++) sig[j]=sig[j]+(X[i][j]-mean[j])*(X[i][j]-mean[j]);
+    for(j=0;j<d;j++) sig[j]=sqrt(sig[j]/n);
     for(j=0;j<d;j++){
         if(sig[j]==0) for(i=0;i<n;i++) Y[i][j]=0;
         else for(i=0;i<Tn;i++) Y[i][j]=(T[i][j]-mean[j])/sig[j];
@@ -334,16 +307,18 @@ double **Re_Normalization(double **X,double **Y,double **RE_X,int n,int d){
     double *max=d_CreateONEDimensionalArray(d);
     for(j=0;j<d;j++)max[j]=(-LDBL_MAX);
     double *min=d_CreateONEDimensionalArray(d);
-    for(j=0;j<d;j++)min[j]=LDBL_MAX;
-    for(j=0;j<d;j++)
-    for(i=0;i<n;i++){
-        if(X[i][j]>max[j])max[j]=X[i][j];
-        if(X[i][j]<min[j])min[j]=X[i][j];
+    for(j=0;j<d;j++) min[j]=LDBL_MAX;
+    for(j=0;j<d;j++){
+        for(i=0;i<n;i++){
+            if(X[i][j]>max[j])max[j]=X[i][j];
+            if(X[i][j]<min[j])min[j]=X[i][j];
+        }
     }
-    for(j=0;j<d;j++)
-    for(i=0;i<n;i++){
-        Y[i][j]=((Y[i][j]-0.001)*0.5)/(0.5-0.001);
-        RE_X[i][j]=Y[i][j]*(max[j]-min[j])+min[j];
+    for(j=0;j<d;j++){
+        for(i=0;i<n;i++){
+            Y[i][j]=((Y[i][j]-0.001)*0.5)/(0.5-0.001);
+            RE_X[i][j]=Y[i][j]*(max[j]-min[j])+min[j];
+        }
     }
     free(max);
     free(min);
@@ -352,17 +327,13 @@ double **Re_Normalization(double **X,double **Y,double **RE_X,int n,int d){
 
 double *M_TO_V(double **M,double *V,int Y,int X){
     int i,j;
-    for(i=0;i<Y;i++)
-    for(j=0;j<X;j++)
-    V[i*X+j]=M[i][j];
+    for(i=0;i<Y;i++) for(j=0;j<X;j++) V[i*X+j]=M[i][j];
     return V;
 }
 
 double **V_TO_M(double *V,double **M,int Y,int X){
     int i,j;
-    for(i=0;i<Y;i++)
-    for(j=0;j<X;j++)
-    M[i][j]=V[i*X+j];
+    for(i=0;i<Y;i++) for(j=0;j<X;j++) M[i][j]=V[i*X+j];
     return M;
 }
 

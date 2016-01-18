@@ -163,9 +163,7 @@ int main(int argc, char *argv[]){
     fclose(X_data);
 
 ///////////Is data need to be normalize? Check!/////////////
-    for(i=0;i<XN;i++)
-    for(j=0;j<XD;j++)
-    if(READ[i][j]>0.998||READ[i][j]<(-0.998)) need_nomalization=1;
+    for(i=0;i<XN;i++) for(j=0;j<XD;j++) if(READ[i][j]>0.998||READ[i][j]<(-0.998)) need_nomalization=1;
 
 ////////////////Set size of window(Wsize)///////////////////
     printf("Size of time window ->>");
@@ -183,9 +181,7 @@ int main(int argc, char *argv[]){
         double **X=d_CreateTwoDimensionalArray(XN,XD);
         X=Normalization(READ,X,XN,XD);
         for(i=0;i<VN;i++){
-            for(j=0,e=0;j<Wsize;j++)
-            for(q=0;q<XD;q++,e++)
-            V[i][e]=X[i+j][q];
+            for(j=0,e=0;j<Wsize;j++) for(q=0;q<XD;q++,e++) V[i][e]=X[i+j][q];
             V[i][VD]=1;
         }
         DeleteTwoDimensionalArray(X,XN,XD);
@@ -194,9 +190,7 @@ int main(int argc, char *argv[]){
     if(need_nomalization!=1){
         printf("---------------------\nNeed not to do nomalization\n---------------------\n");
         for(i=0;i<VN;i++){
-            for(j=0,e=0;j<Wsize;j++)
-            for(q=0;q<XD;q++,e++)
-            V[i][e]=READ[i+j][q];
+            for(j=0,e=0;j<Wsize;j++) for(q=0;q<XD;q++,e++) V[i][e]=READ[i+j][q];
             V[i][VD]=1.0;
         }
     }
@@ -234,18 +228,20 @@ int main(int argc, char *argv[]){
     double**Wh=d_CreateTwoDimensionalArray(VD+1,HD);//Weights of encoder
     double **Wr=d_CreateTwoDimensionalArray(HD+1,VD);//Weights of decoder
     if(Model==1){
-        for(int ppp=1,i=0;i<VD+1;i++)
-        for(j=0;j<HD;j++){
-            Wh[i][j]=Gaussian2(0,0.2,ppp);//d_rndn(99)/10000+0.0001; //Initialize weights of encoder by Gaussian
-            if(ppp==1)ppp=0;
-            else if(ppp==0)ppp=1;
-	//printf("%f\n",Wh[i][j]);system("pause");
+        for(int ppp=1,i=0;i<VD+1;i++){
+            for(j=0;j<HD;j++){
+                Wh[i][j]=Gaussian2(0,0.2,ppp);//d_rndn(99)/10000+0.0001; //Initialize weights of encoder by Gaussian
+                if(ppp==1)ppp=0;
+                else if(ppp==0)ppp=1;
+	   //printf("%f\n",Wh[i][j]);system("pause");
+            }
         }
-        for(int ppp=1,i=0;i<HD+1;i++)
-        for(j=0;j<VD;j++){
-            Wr[i][j]=Gaussian2(0,0.2,ppp);//d_rndn(99)/10000+0.0001;//Initialize weights of decoder by Gaussian
-            if(ppp==1)ppp=0;
-            else if(ppp==0)ppp=1;
+        for(int ppp=1,i=0;i<HD+1;i++){
+            for(j=0;j<VD;j++){
+                Wr[i][j]=Gaussian2(0,0.2,ppp);//d_rndn(99)/10000+0.0001;//Initialize weights of decoder by Gaussian
+                if(ppp==1)ppp=0;
+                else if(ppp==0)ppp=1;
+            }
         }
     }
     if(Model==2){

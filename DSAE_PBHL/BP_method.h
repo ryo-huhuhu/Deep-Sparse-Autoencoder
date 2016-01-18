@@ -17,22 +17,16 @@ double LR_h(double **V,double **V_denoising,double **Wh,double **Wr,double **dH_
     a=a+step;
     temp1=temp;
     clear_vector(p_hat,HD);
-    for (j = 0; j < VD+1; j++)
-    for (k = 0; k < HD; k++)
-    t_Wh[j][k]=Wh[j][k]-a*dH_Wh[j][k];
+    for (j = 0; j < VD+1; j++) for (k = 0; k < HD; k++) t_Wh[j][k]=Wh[j][k]-a*dH_Wh[j][k];
     for(i=0,e_all=0;i<VN;i++){
         h=hidden(V_denoising[i],h,t_Wh,VD,HD);
-        for(j=0;j<HD;j++)
-        p_hat[j]=p_hat[j]+h[j];
+        for(j=0;j<HD;j++) p_hat[j]=p_hat[j]+h[j];
         r=reconstruction(h,r,Wr,VD,HD);
         e_all=e_all+error(V[i],r,VD);
     }
-    for(j=0;j<HD;j++)
-    p_hat[j]=(p_hat[j]/VN+1)/2;
+    for(j=0;j<HD;j++) p_hat[j]=(p_hat[j]/VN+1)/2;
     SP=sparce(p,p_hat,HD);
-    for(L2_Wh=0,j=0;j<VD;j++)
-    for(k=0;k<HD;k++)
-    L2_Wh=L2_Wh+t_Wh[j][k]*t_Wh[j][k];
+    for(L2_Wh=0,j=0;j<VD;j++) for(k=0;k<HD;k++) L2_Wh=L2_Wh+t_Wh[j][k]*t_Wh[j][k];
     temp=e_all/VN+A*0.5*(L2_Wh)+B*SP;
     if(temp<mintemp){
         mintemp=temp;
@@ -62,28 +56,24 @@ double LR_r(double **V,double **V_denoising,double **Wh,double **Wr,double **dH_
     while(check>=SSS){
         a=a+step;
         temp1=temp;
-        for (j = 0; j < HD+1; j++)
-        for (k = 0; k < VD; k++)
-        t_Wr[j][k] =Wr[j][k]-a*dH_Wr[j][k];
+        for (j = 0; j < HD+1; j++) for (k = 0; k < VD; k++) t_Wr[j][k] =Wr[j][k]-a*dH_Wr[j][k];
         for(i=0,e_all=0;i<VN;i++){
             r=reconstruction(H[i],r,t_Wr,VD,HD);
             e_all=e_all+error(V[i],r,VD);
         }
-        for(L2_Wr=0,j=0;j<HD;j++)
-        for(k=0;k<VD;k++)
-        L2_Wr=L2_Wr+t_Wr[j][k]*t_Wr[j][k];
+        for(L2_Wr=0,j=0;j<HD;j++) for(k=0;k<VD;k++) L2_Wr=L2_Wr+t_Wr[j][k]*t_Wr[j][k]; // L2 norm (normalization term)
         temp=e_all/VN+A*0.5*L2_Wr;
         if(temp<mintemp){
             mintemp=temp;
             mina=a;
         }
         check=fabs(temp1-temp);
-        if(temp>temp1) step=(-0.5)*step;
+        if(temp>temp1) step=(-0.5)*step;// step rate
     }
     DeleteTwoDimensionalArray(t_Wr,HD+1,VD);
     DeleteTwoDimensionalArray(H,VN,HD+1);
     free(r);
-    return mina;
+    return mina; // Optimized step rate
 }
 
 ///////////////////////BP():1???P??///////////////////////////
@@ -104,49 +94,36 @@ void BP(double **V,double **V_denoising,double **Wh,double **Wr,int VN,int VD,in
     clear_vector(d_h,HD);
     clear_vector(p_hat,HD);
     for(i=0;i<VN;i++){
-        H[i] = hidden(V_denoising[i], H[i], Wh, VD, HD);
-        for(j=0;j<HD;j++)
-        p_hat[j] = p_hat[j] + H[i][j];
+        H[i] = hidden(V_denoising[i], H[i], Wh, VD, HD);//cul hidden units
+        for(j=0;j<HD;j++) p_hat[j] = p_hat[j] + H[i][j];
     }
-    for(j=0;j<HD;j++) p_hat[j]=(p_hat[j]/VN+1)/2;
+    for(j=0;j<HD;j++) p_hat[j]=(p_hat[j]/VN+1)/2;// for sparse term
     for(i=0;i<VN;i++){
         //h=hidden(V_denoising[i],h,Wh,VD,HD);
-        r = reconstruction(H[i], r, Wr, VD, HD);
+        r = reconstruction(H[i], r, Wr, VD, HD);// cul reconstruction units
         // e_all=e_all+error(V[i],r,VD);
-        for (j = 0; j < VD; j++)
-        d_r[j] =(-(1 - r[j]*r[j]) * (V[i][j] - r[j]));
-        for (j = 0; j < HD; j++)
-        for (k = 0; k < VD; k++)
-        d_Wr[j][k] += H[i][j] * d_r[k];
-        for (k = 0; k < VD; k++)
-        d_Wr[HD][k] += d_r[k];
+        for (j = 0; j < VD; j++) d_r[j] =(-(1 - r[j]*r[j]) * (V[i][j] - r[j]));// sigmoid function derivative in reconstruction layer
+        for (j = 0; j < HD; j++) for (k = 0; k < VD; k++) d_Wr[j][k] += H[i][j] * d_r[k];
+        for (k = 0; k < VD; k++) d_Wr[HD][k] += d_r[k];
         for (j = 0; j < HD; j++){
-            for (k = 0,temp=0; k < VD; k++)
-            temp = temp + Wr[j][k] * d_r[k];
-            d_h[j] = (temp + B*(((1 - p) / (1 - p_hat[j])) - (p / p_hat[j]))) * (1 - H[i][j] * H[i][j]);
+            for (k = 0,temp=0; k < VD; k++) temp = temp + Wr[j][k] * d_r[k];
+            d_h[j] = (temp + B*(((1 - p) / (1 - p_hat[j])) - (p / p_hat[j]))) * (1 - H[i][j] * H[i][j]);// sparse term
         }
-        for (j = 0; j < VD; j++)
-        for (k = 0; k < HD; k++)
-        d_Wh[j][k] +=V[i][j] * d_h[k];
-        for (k = 0; k < HD; k++)
-        d_Wh[VD][k]+= d_h[k];
+        for (j = 0; j < VD; j++) for (k = 0; k < HD; k++) d_Wh[j][k] +=V[i][j] * d_h[k];
+        for (k = 0; k < HD; k++) d_Wh[VD][k]+= d_h[k];
     }
-    for (j = 0; j < HD; j++)
-    for (k = 0; k < VD; k++) d_Wr[j][k] = d_Wr[j][k]/VN+A*Wr[j][k];
-    for (k = 0; k < VD; k++) d_Wr[HD][k] = d_Wr[HD][k]/VN;
-    for (j = 0; j < VD; j++)
-    for (k = 0; k < HD; k++) d_Wh[j][k] =  d_Wh[j][k]/VN+A*Wh[j][k];
-    for (k = 0; k < HD; k++) d_Wh[VD][k]= d_Wh[VD][k]/VN;
+    for (j = 0; j < HD; j++) for (k = 0; k < VD; k++) d_Wr[j][k] = d_Wr[j][k]/VN+A*Wr[j][k];
+    for (k = 0; k < VD; k++) d_Wr[HD][k] = d_Wr[HD][k]/VN;// decode cost function gradient
+    for (j = 0; j < VD; j++) for (k = 0; k < HD; k++) d_Wh[j][k] =  d_Wh[j][k]/VN+A*Wh[j][k];
+    for (k = 0; k < HD; k++) d_Wh[VD][k]= d_Wh[VD][k]/VN;// encode cost function gradient
     //printf("-------aa_r---------\n");
-    double aa_r=LR_r(V,V_denoising,Wh,Wr,d_Wr,VN,VD,HD,eck,p,A,B,step);
+    double aa_r=LR_r(V,V_denoising,Wh,Wr,d_Wr,VN,VD,HD,eck,p,A,B,step); // get optimized step rate in decoder
     //printf("aa_r=%f\n",aa_r);
     //printf("-------aa_h---------\n");
-    double aa_h=LR_h(V,V_denoising,Wh,Wr,d_Wh,VN,VD,HD,eck,p,A,B,step);
+    double aa_h=LR_h(V,V_denoising,Wh,Wr,d_Wh,VN,VD,HD,eck,p,A,B,step); // get optimized step rate in encoder
     //printf("aa_h=%f\n",aa_h);
-    for (j = 0; j < HD+1; j++)
-    for (k = 0; k < VD; k++) Wr[j][k] = Wr[j][k] - aa_r*d_Wr[j][k];
-    for (j = 0; j < VD+1; j++)
-    for (k = 0; k < HD; k++) Wh[j][k] = Wh[j][k] - aa_h*d_Wh[j][k];
+    for (j = 0; j < HD+1; j++) for (k = 0; k < VD; k++) Wr[j][k] = Wr[j][k] - aa_r*d_Wr[j][k]; // update reconstraction weight
+    for (j = 0; j < VD+1; j++) for (k = 0; k < HD; k++) Wh[j][k] = Wh[j][k] - aa_h*d_Wh[j][k]; // update hidden weight
     DeleteTwoDimensionalArray(d_Wh,VD+1,HD);
     DeleteTwoDimensionalArray(d_Wr,HD+1,VD);
     DeleteTwoDimensionalArray(H, VN, HD + 1);
@@ -207,8 +184,7 @@ void BP_ALL(double **V,double **Wh,double **Wr,int VN,int VD,int HD,double eck,d
         clear_vector(p_hat,HD);
         for(i=0,e_all=0;i<VN;i++){
             h=hidden(V[i],h,Wh,VD,HD);
-            for(j=0;j<HD;j++)
-            p_hat[j]=p_hat[j]+h[j];
+            for(j=0;j<HD;j++) p_hat[j]=p_hat[j]+h[j];
             r=reconstruction(h,r,Wr,VD,HD);
             e_all=e_all+error(V[i],r,VD);
         }
@@ -216,12 +192,8 @@ void BP_ALL(double **V,double **Wh,double **Wr,int VN,int VD,int HD,double eck,d
             p_hat[j]=(p_hat[j]/VN+1)/2;
             if(p_hat[j]==0.0)p_hat[j]=0.0000000001;
         }
-        for(L2_Wh=0,j=0;j<VD;j++)
-        for(k=0;k<HD;k++)
-        L2_Wh=L2_Wh+Wh[j][k]*Wh[j][k];
-        for(L2_Wr=0,j=0;j<HD;j++)
-        for(k=0;k<VD;k++)
-        L2_Wr=L2_Wr+Wr[j][k]*Wr[j][k];
+        for(L2_Wh=0,j=0;j<VD;j++) for(k=0;k<HD;k++) L2_Wh=L2_Wh+Wh[j][k]*Wh[j][k];
+        for(L2_Wr=0,j=0;j<HD;j++) for(k=0;k<VD;k++) L2_Wr=L2_Wr+Wr[j][k]*Wr[j][k];
         FILE *BFGS;
         BFGS=fopen(Gradient_filename,"a+");
         e_all=e_all/VN;
@@ -357,9 +329,7 @@ void BP_ALL(double **V,double **Wh,double **Wr,int VN,int VD,int HD,double eck,d
             }
             READ=READ_FILE2(X_data,READ,XD,XN);
             fclose(X_data);
-            for(i=0;i<XN;i++)
-            for(j=0;j<XD;j++)
-            if(READ[i][j]>0.998||READ[i][j]<(-0.998)) need_nomalization=1;
+            for(i=0;i<XN;i++) for(j=0;j<XD;j++) if(READ[i][j]>0.998||READ[i][j]<(-0.998)) need_nomalization=1;
             if(need_nomalization==1){
                 printf("---------------------\nNeed to do nomalization\n---------------------\n");
 
@@ -367,9 +337,7 @@ void BP_ALL(double **V,double **Wh,double **Wr,int VN,int VD,int HD,double eck,d
                 double **X=d_CreateTwoDimensionalArray(XN,XD);
                 X=Normalization(READ,X,XN,XD);
                 for(i=0;i<VN;i++){
-                    for(j=0,e=0;j<Wsize;j++)
-                    for(q=0;q<XD;q++,e++)
-                    V[i][e]=X[i+j][q];
+                    for(j=0,e=0;j<Wsize;j++) for(q=0;q<XD;q++,e++) V[i][e]=X[i+j][q];
                     V[i][VD]=1.0;
                 }
                 DeleteTwoDimensionalArray(X,XN,XD);
@@ -379,9 +347,7 @@ void BP_ALL(double **V,double **Wh,double **Wr,int VN,int VD,int HD,double eck,d
             if(need_nomalization!=1){
                 printf("---------------------\nNeed not to do nomalization\n---------------------\n");
                 for(i=0;i<VN;i++){
-                    for(j=0,e=0;j<Wsize;j++)
-                    for(q=0;q<XD;q++,e++)
-                    V[i][e]=READ[i+j][q];
+                    for(j=0,e=0;j<Wsize;j++) for(q=0;q<XD;q++,e++) V[i][e]=READ[i+j][q];
                 V[i][VD]=1.0;
                 }
             }
