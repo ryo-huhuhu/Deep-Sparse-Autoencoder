@@ -118,9 +118,10 @@ int main(int argc, char *argv[]){
     printf("           [1] Train the new model                               \n");
     printf("           [2] Continue to train the old model            \n");
     printf("|---------------------------------------------------------|\n");
-    int Model=0;
-    printf("Model>>>");
-    scanf("%d",&Model);
+    int Model=1;
+    //int Model=0;
+    //printf("Model>>>");
+    //scanf("%d",&Model);
     if(Model!=1&&Model!=2){
         printf("|---------------------------------------------------------|\n");
         printf("                  Please choose the mod                   \n");
@@ -131,8 +132,9 @@ int main(int argc, char *argv[]){
         printf("Model>>>");
         scanf("%d",&Model);
     }
-    printf("Learning set X File name ->>");
-    scanf("%s",X_data_name);
+    //printf("Learning set X File name ->>");
+    //scanf("%s",X_data_name);
+    strcpy(X_data_name, "6_spk.txt");
 
 //////////////Check data's quantity of input(X)////////////////
     if((X_data=fopen(X_data_name,"r")) == NULL){
@@ -166,8 +168,9 @@ int main(int argc, char *argv[]){
     for(i=0;i<XN;i++) for(j=0;j<XD;j++) if(READ[i][j]>0.998||READ[i][j]<(-0.998)) need_nomalization=1;
 
 ////////////////Set size of window(Wsize)///////////////////
-    printf("Size of time window ->>");
-    scanf("%d",&Wsize);
+    //printf("Size of time window ->>");
+    //scanf("%d",&Wsize);
+    Wsize=1;
 
 /////////////////Create Visual layer(V)////////////////////
     VN=XN-Wsize+1;printf("VN=%d\t",VN);
@@ -210,8 +213,9 @@ int main(int argc, char *argv[]){
 
 //////////////Set dimensions of Hidden layer(H)//////////////
     int HD;
-    printf("Dimensionas of Hidden layer ->>");
-    scanf("%d",&HD);
+    //printf("Dimensionas of Hidden layer ->>");
+    //scanf("%d",&HD);
+    HD=6;
     sprintf(H_OUT_filename, "%d.txt",HD);
     sprintf(W_H_filename, "W_H_%d.txt", HD);
     sprintf(W_R_filename, "W_R_%d.txt", HD);
@@ -253,7 +257,24 @@ int main(int argc, char *argv[]){
         fclose(READ_WH);
         fclose(READ_WR);
     }
-
+// ----------------------------------------pbhl----------------------------------------
+    for(i=0;i<VD+1;i++) for(j=0;j<HD;j++) if(i<10&&i>5&&j<3) Wh[i][j]=0;
+    for(i=0;i<HD+1;i++) for(j=0;j<VD;j++) if(i<3&&j>5) Wr[i][j]=0;
+    for(i=0;i<VD+1;i++){
+        for(j=0;j<HD;j++){
+            if(j<HD-1) printf("%f\t",Wh[i][j]);
+            else printf("%f",Wh[i][j]);
+        }
+        printf("\n");
+    }
+    for(i=0;i<HD+1;i++){
+        for(j=0;j<VD;j++){
+            if(j<VD-1) printf("%f\t",Wr[i][j]);
+            else printf("%f",Wr[i][j]);
+        }
+        printf("\n");
+    }
+// ----------------------------------------pbhl----------------------------------------
 ///////////////////Training//////////////////////
     BP_ALL(V,Wh,Wr,VN,VD,HD,eck,p,A,B);//Train SAE by BP method
     //system("pause");

@@ -281,7 +281,10 @@ void BP_ALL(double **V,double **Wh,double **Wr,int VN,int VD,int HD,double eck,d
             else{
                 for(i=0;i<VN;i++){
                     h=hidden(V[i],h,Wh,VD,HD);
-                    for(k=0;k<HD;k++) if(k<HD-1) fprintf(H_OUT,"%f\t",h[k]);
+                    for(k=0;k<HD;k++){
+                        if(k<HD-1)fprintf(H_OUT,"%f\t",h[k]);
+                        else fprintf(H_OUT,"%f",h[k]);
+                    }
                     fprintf(H_OUT,"\n");
                 }
                 fclose(H_OUT);

@@ -124,6 +124,10 @@ void BP(double **V,double **V_denoising,double **Wh,double **Wr,int VN,int VD,in
     //printf("aa_h=%f\n",aa_h);
     for (j = 0; j < HD+1; j++) for (k = 0; k < VD; k++) Wr[j][k] = Wr[j][k] - aa_r*d_Wr[j][k]; // update reconstraction weight
     for (j = 0; j < VD+1; j++) for (k = 0; k < HD; k++) Wh[j][k] = Wh[j][k] - aa_h*d_Wh[j][k]; // update hidden weight
+// ----------------------------------------pbhl----------------------------------------
+    for(i=0;i<VD+1;i++) for(j=0;j<HD;j++) if(i<10&&i>5&&j<3) Wh[i][j]=0;
+    for(i=0;i<HD+1;i++) for(j=0;j<VD;j++) if(i<3&&j>5) Wr[i][j]=0;
+// ----------------------------------------pbhl----------------------------------------
     DeleteTwoDimensionalArray(d_Wh,VD+1,HD);
     DeleteTwoDimensionalArray(d_Wr,HD+1,VD);
     DeleteTwoDimensionalArray(H, VN, HD + 1);
@@ -253,7 +257,10 @@ void BP_ALL(double **V,double **Wh,double **Wr,int VN,int VD,int HD,double eck,d
             else{
                 for(i=0;i<VN;i++){
                     h=hidden(V[i],h,Wh,VD,HD);
-                    for(k=0;k<HD;k++) if(k<HD-1) fprintf(H_OUT,"%f\t",h[k]);
+                    for(k=0;k<HD;k++){
+                        if(k<HD-1) fprintf(H_OUT,"%f\t",h[k]);
+                        else fprintf(H_OUT,"%f",h[k]);
+                    }
                     fprintf(H_OUT,"\n");
                 }
                 fclose(H_OUT);
